@@ -3,13 +3,14 @@
 
 name: Test tap-stripe
 
-on: [push]
+on: pull_request
 
 jobs:
   pytest:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      TAP_STRIPE_API_KEY: ${{secrets.TAP_STRIPE_API_KEY}}
     strategy:
       matrix:
         python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
