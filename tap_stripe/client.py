@@ -1,4 +1,4 @@
-"""REST client handling, including StripeStream base class."""
+"""client handling, including StripeStream base class."""
 
 from __future__ import annotations
 
