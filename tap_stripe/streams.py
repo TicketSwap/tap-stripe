@@ -92,5 +92,5 @@ class ExxchangeRateStream(StripeStream):
                 yield {'send_currency': exchange_rate['id'],
                        'receive_currency': recieve_currency,
                        'rate': rate,
-                       'date': datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+                       'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                        }
