@@ -38,7 +38,7 @@ class TapStripe(Tap):
         return [
             streams.ChargesStream(self),
             streams.DisputesStream(self),
-            streams.ExxchangeRateStream(self)
+            streams.ExchangeRateStream(self)
         ]
 
 

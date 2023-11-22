@@ -73,7 +73,7 @@ class DisputesStream(StripeStream):
         disputes = stripe.Dispute.list(limit=100, created={'gt':self.get_starting_timestamp(context)})
         return disputes.auto_paging_iter()
     
-class ExxchangeRateStream(StripeStream):
+class ExchangeRateStream(StripeStream):
     name = "exchangerates"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     schema = PropertiesList(
