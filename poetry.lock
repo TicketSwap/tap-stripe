@@ -1271,21 +1271,6 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
-name = "stripe"
-version = "7.5.0"
-description = "Python bindings for the Stripe API"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "stripe-7.5.0-py2.py3-none-any.whl", hash = "sha256:e54160e8eaa8d3947bd9178e7a7ded07f34263a301834baa1e43a8aee9a0facf"},
-    {file = "stripe-7.5.0.tar.gz", hash = "sha256:76e0df7071da5ef39134d929b8c7facf1319aa47c222bf1272b48ac55abf3d6f"},
-]
-
-[package.dependencies]
-requests = {version = ">=2.20", markers = "python_version >= \"3.0\""}
-typing-extensions = {version = ">=4.5.0", markers = "python_version >= \"3.7\""}
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -1344,4 +1329,4 @@ s3 = ["fs-s3fs"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4"
-content-hash = "bd02f8bb024cb73a8017eecf336d8dbe7df837fe6a197d64169d32ac5d4e08c7"
+content-hash = "b1496430e51b90d954ef24bf10a27083d84c654854a672eac62928364aa6481b"
