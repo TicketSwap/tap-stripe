@@ -19,7 +19,6 @@ singer-sdk = { version="~=0.33.1" }
 fs-s3fs = { version = "~=1.1.1", optional = true }
 requests = "~=2.31.0"
 cached-property = "~=1" # Remove after Python 3.7 support is dropped
-stripe = "^7.5.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=7.4.0"

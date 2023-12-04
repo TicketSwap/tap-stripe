@@ -26,7 +26,7 @@ class TapStripe(Tap):
             "start_date",
             th.DateTimeType,
             description="The earliest record date to sync",
-        )
+        ),
     ).to_dict()
 
     def discover_streams(self) -> list[streams.StripeStream]:
@@ -38,7 +38,7 @@ class TapStripe(Tap):
         return [
             streams.ChargesStream(self),
             streams.DisputesStream(self),
-            streams.ExchangeRateStream(self)
+            streams.ExchangeRateStream(self),
         ]
 
 
