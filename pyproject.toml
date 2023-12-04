@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tap-stripe"
-version = "0.0.1"
+version = "1.0.0"
 description = "`tap-stripe` is a Singer tap for Stripe, built with the Meltano Singer SDK."
 readme = "README.md"
 authors = ["Tobias Cadee <tobias.cadee@ticketswap.com>"]
