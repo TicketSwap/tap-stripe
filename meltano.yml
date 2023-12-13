@@ -16,8 +16,10 @@ plugins:
         - catalog
         - discover
       config:
-        start_date: "2023-12-04T12:00:00Z"
-        api_key: $TAP_STRIPE_API_KEY_BRAZIL
+        start_date: "2023-12-01T00:00:00Z"
+        api_key: $TAP_STRIPE_API_KEY_GLOBAL
+      select:
+        - report_runs.*
 
   loaders:
     - name: target-jsonl

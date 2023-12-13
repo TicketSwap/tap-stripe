@@ -4,12 +4,8 @@ from __future__ import annotations
 
 import typing as t
 import requests
-from pathlib import Path
-from typing import Iterable, Optional
 from datetime import datetime
 
-from singer_sdk import typing as th  # JSON Schema typing helpers
-from singer_sdk.helpers.jsonpath import extract_jsonpath
 from singer_sdk.typing import (
     IntegerType,
     StringType,
@@ -23,6 +19,7 @@ from singer_sdk.typing import (
 )
 
 from tap_stripe.client import StripeStream
+from .schemas.reports import activity_summary_1
 
 
 class ChargesStream(StripeStream):
@@ -199,7 +196,7 @@ class DisputesStream(StripeStream):
 class ExchangeRateStream(StripeStream):
     name = "exchange_rates"
     path = "/exchange_rates"
-    primary_keys: t.ClassVar[list[str]] = ["send_currency"]
+    primary_keys: t.ClassVar[list[str]] = ["send_currency", "date"]
     schema = PropertiesList(
         Property("send_currency", StringType),
         Property("receive_currency", StringType),
@@ -228,3 +225,66 @@ class ExchangeRateStream(StripeStream):
                     "rate": rate,
                     "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 }
+
+
+class ReportRunsStream(StripeStream):
+    name = "report_runs"
+    path = "/reporting/report_runs"
+    primary_keys: t.ClassVar[list[str]] = ["id"]
+    replication_key = "succeeded_at"
+    is_sorted = False
+    schema = PropertiesList(
+        Property("id", StringType),
+        Property("object", StringType),
+        Property("created", IntegerType),
+        Property("error", StringType),
+        Property("livemode", BooleanType),
+        Property(
+            "parameters", ObjectType(Property("interval_end", IntegerType), Property("interval_start", IntegerType))
+        ),
+        Property("report_type", StringType),
+        Property(
+            "result",
+            ObjectType(
+                Property("id", StringType),
+                Property("object", StringType),
+                Property("created", IntegerType),
+                Property("expires_at", IntegerType),
+                Property("filename", StringType),
+                Property(
+                    "links",
+                    ObjectType(
+                        Property("object", StringType),
+                        Property("data", ArrayType(ObjectType(Property("id", StringType)))),
+                        Property("has_more", BooleanType),
+                        Property("url", StringType),
+                    ),
+                ),
+                Property("purpose", StringType),
+                Property("size", IntegerType),
+                Property("title", StringType),
+                Property("type", StringType),
+                Property("url", StringType),
+            ),
+        ),
+        Property("status", StringType),
+        Property("succeeded_at", IntegerType),
+    ).to_dict()
+
+    def get_child_context(self, record: dict, context: t.Optional[dict]) -> dict:
+        """Return a context dictionary for child streams."""
+        return {"report_type": record["report_type"], "url": record["result"]["url"]}
+
+
+class ReportsStream(StripeStream):
+    name = "{report_type}".replace(".", "_")
+    parent_stream_type = ReportRunsStream
+    match "{report_type}":
+        case "activity.summary.1":
+            schema = activity_summary_1
+
+    def get_url_params(self, context, next_page_token):
+        return None
+
+    def get_url(self, context: dict | None) -> str:
+        return context["url"]

@@ -85,8 +85,6 @@ class StripeStream(RESTStream):
         if next_page_token:
             params["starting_after"] = next_page_token
 
-        self.logger.info(f"params = {params}")
-
         return params
 
     def get_new_paginator(self) -> BaseOffsetPaginator:

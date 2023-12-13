@@ -39,6 +39,7 @@ class TapStripe(Tap):
             streams.ChargesStream(self),
             streams.DisputesStream(self),
             streams.ExchangeRateStream(self),
+            streams.ReportRunsStream(self),
         ]
 
 
