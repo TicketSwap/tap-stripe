@@ -199,7 +199,7 @@ class DisputesStream(StripeStream):
 class ExchangeRateStream(StripeStream):
     name = "exchange_rates"
     path = "/exchange_rates"
-    primary_keys: t.ClassVar[list[str]] = ["send_currency", "date"]
+    primary_keys: t.ClassVar[list[str]] = ["send_currency", "receive_currency", "date"]
     schema = PropertiesList(
         Property("send_currency", StringType),
         Property("receive_currency", StringType),
@@ -220,11 +220,14 @@ class ExchangeRateStream(StripeStream):
             https://requests.readthedocs.io/en/latest/api/#requests.Response
         """
         data = response.json()["data"]
-        for row in data:
-            for receive_currency, rate in row["rates"].items():
-                yield {
-                    "send_currency": row["id"],
-                    "receive_currency": receive_currency,
-                    "rate": rate,
-                    "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                }
+        rows_list = [
+            {
+                "send_currency": row["id"],
+                "receive_currency": receive_currency,
+                "rate": rate,
+                "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+            for row in data
+            for receive_currency, rate in row["rates"].items()
+        ]
+        return iter(rows_list)
