@@ -17,7 +17,9 @@ plugins:
         - discover
       config:
         start_date: "2023-12-04T12:00:00Z"
-        api_key: $TAP_STRIPE_API_KEY_BRAZIL
+        api_key: $TAP_STRIPE_API_KEY_GLOBAL
+      select:
+        - exchange_rates.*
 
   loaders:
     - name: target-jsonl

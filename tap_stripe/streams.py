@@ -199,7 +199,7 @@ class DisputesStream(StripeStream):
 class ExchangeRateStream(StripeStream):
     name = "exchange_rates"
     path = "/exchange_rates"
-    primary_keys: t.ClassVar[list[str]] = ["send_currency"]
+    primary_keys: t.ClassVar[list[str]] = ["send_currency", "date"]
     schema = PropertiesList(
         Property("send_currency", StringType),
         Property("receive_currency", StringType),
