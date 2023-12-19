@@ -40,6 +40,10 @@ class TapStripe(Tap):
             streams.DisputesStream(self),
             streams.ExchangeRateStream(self),
             streams.ReportRunsStream(self),
+            streams.ActivitySummary1Stream(self),
+            streams.ActivityItemized2Stream(self),
+            streams.BalanceChangeFromActivityItemized2Stream(self),
+            streams.BalanceChangeFromActivitySummary1Stream(self),
         ]
 
 
