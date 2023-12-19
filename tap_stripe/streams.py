@@ -34,7 +34,7 @@ class DisputesStream(StripeStream):
 class ExchangeRateStream(StripeStream):
     name = "exchange_rates"
     path = "/exchange_rates"
-    primary_keys: t.ClassVar[list[str]] = ["send_currency", "date"]
+    primary_keys: t.ClassVar[list[str]] = ["send_currency", "receive_currency", "date"]
     schema = exchange_rates_schema
 
     def parse_response(self, response: requests.Response) -> t.Iterable[dict]:
