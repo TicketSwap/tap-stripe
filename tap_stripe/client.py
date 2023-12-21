@@ -175,7 +175,7 @@ class StripeReportStream(StripeStream):
         )
         retry = 1
         self.logger.info(f"retrieving download url for report {self.original_name}")
-        while retry <= 5:
+        while retry <= 6:
             try:
                 url = self._request(prepared_request, None).json().get("result").get("url")
                 return url
