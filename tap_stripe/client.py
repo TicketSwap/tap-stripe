@@ -203,11 +203,10 @@ class StripeReportStream(StripeStream):
                 self.report_end_at = report_end_at
                 run_id = self.issue_run(report_start_at, report_end_at)
                 url = self.get_download_url(run_id)
-            if url:
+            if url is not None:
                 records = self.download_report(context=context, url=url)
                 return records
-            else:
-                yield
+        return []
 
     def download_report(self, context: dict | None, url: str) -> Iterable[dict[str, Any]]:
         prepared_request = self.build_prepared_request(
@@ -219,12 +218,8 @@ class StripeReportStream(StripeStream):
         response = self._request(prepared_request=prepared_request, context=None)
         csv_file = StringIO(response.text)
         dict_reader = csv.DictReader(csv_file)
-        for record in dict_reader:
-            transformed_record = self.post_process(record, context)
-            if transformed_record is None:
-                # Record filtered out during post_process()
-                continue
-            yield transformed_record
+        transformed_records = [self.post_process(record, context) for record in dict_reader]
+        return transformed_records
 
     def safe_eval(self, value):
         try:
@@ -238,6 +233,6 @@ class StripeReportStream(StripeStream):
         row["report_end_at"] = self.report_end_at
         row["loaded_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
         row[self.primary_keys[0]] = md5(
-            "".join([row[key] for key in row.keys() if key in self.id_keys and row[key] is not None]).encode()
+            "".join([str(row[key]) for key in row.keys() if key in self.id_keys and row[key] is not None]).encode()
         ).hexdigest()
         return row
