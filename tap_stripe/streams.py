@@ -74,26 +74,31 @@ class ReportRunsStream(StripeStream):
 class ActivityItemized2Stream(StripeReportStream):
     name = "activity_itemized_2"
     original_name = "activity.itemized.2"
-    id_keys: t.ClassVar[list[str]] = ["balance_transaction_id", "balance_transaction_component", "fee_id"]
+    id_keys: t.ClassVar[list[str]] = [
+        "balance_transaction_id",
+        "balance_transaction_component",
+        "fee_id",
+        "activity_at",
+    ]
     schema = activity_itemized_2_schema
 
 
 class ActivitySummary1Stream(StripeReportStream):
     name = "activity_summary_1"
     original_name = "activity.summary.1"
-    id_keys: t.ClassVar[list[str]] = ["reporting_category", "currency"]
+    id_keys: t.ClassVar[list[str]] = ["reporting_category", "currency", "report_start_at"]
     schema = activity_summary_1_schema
 
 
 class BalanceChangeFromActivityItemized2Stream(StripeReportStream):
     name = "balance_change_from_activity_itemized_2"
     original_name = "balance_change_from_activity.itemized.2"
-    id_keys: t.ClassVar[list[str]] = ["balance_transaction_id"]
+    id_keys: t.ClassVar[list[str]] = ["balance_transaction_id", "created_utc"]
     schema = balance_change_from_activity_itemized_2_schema
 
 
 class BalanceChangeFromActivitySummary1Stream(StripeReportStream):
     name = "balance_change_from_activity_summary_1"
     original_name = "balance_change_from_activity.summary.1"
-    id_keys: t.ClassVar[list[str]] = ["reporting_category", "currency"]
+    id_keys: t.ClassVar[list[str]] = ["reporting_category", "currency", "report_start_at"]
     schema = balance_change_from_activity_summary_1_schema
