@@ -38,6 +38,8 @@ class TapStripe(Tap):
         return [
             streams.ChargesStream(self),
             streams.DisputesStream(self),
+            streams.PaymentIntentsStream(self),
+            # streams.SourcesSchema(self),
             streams.ExchangeRateStream(self),
             streams.ReportRunsStream(self),
             streams.ActivitySummary1Stream(self),
