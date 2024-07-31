@@ -31,6 +31,24 @@ class DisputesStream(StripeStream):
     replication_key = "created"
 
     schema = disputes_schema
+    
+class PaymentIntentsStream(StripeStream):
+    name = "payment_intents"
+    path = "/payment_intents"
+    primary_keys: t.ClassVar[list[str]] = ["id"]
+    is_sorted = False
+    replication_key = "created"
+
+    schema = payment_intents_schema
+    
+# class SourcesSchema(StripeStream):
+#     name = "sources"
+#     path = "/payment_intents"
+#     primary_keys: t.ClassVar[list[str]] = ["id"]
+#     is_sorted = False
+#     replication_key = "created"
+
+#     schema = payment_intents_schema
 
 
 class ExchangeRateStream(StripeStream):
