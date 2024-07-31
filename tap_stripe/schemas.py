@@ -756,9 +756,3 @@ balance_change_from_activity_summary_1_schema = PropertiesList(
     Property("report_end_at", IntegerType),
     Property("loaded_at", DateTimeType),
 ).to_dict()
-
-
-curl -G https://api.stripe.com/v1/payment_methods \
-  -u "sk_test_Gx4mWEgHtCMr4DYMUIqfIrsz:" \
-  -d type=source \
-  -d limit=3 \
