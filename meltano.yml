@@ -16,10 +16,10 @@ plugins:
         - catalog
         - discover
       config:
-        start_date: 1703073600
+        start_date: "2024-06-20T00:00:00Z"
         api_key: $TAP_STRIPE_API_KEY_GLOBAL
       select:
-        - balance_change_from_activity_itemized_2.*
+        - payment_intents.*
         # - report_runs.*
 
   loaders:
