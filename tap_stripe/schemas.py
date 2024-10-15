@@ -1,15 +1,15 @@
 """Stream schemas for tap-stripe."""
 
 from singer_sdk.typing import (
-    IntegerType,
-    StringType,
-    DateTimeType,
-    ObjectType,
-    Property,
-    PropertiesList,
     ArrayType,
     BooleanType,
+    DateTimeType,
+    IntegerType,
     NumberType,
+    ObjectType,
+    PropertiesList,
+    Property,
+    StringType,
 )
 
 charges_schema = PropertiesList(
@@ -175,7 +175,7 @@ payment_intents_schema = PropertiesList(
         "automatic_payment_methods",
         ObjectType(
             Property("allow_redirects", StringType),
-            Property("enabled", BooleanType)
+            Property("enabled", BooleanType),
         ),
     ),
     Property("created", IntegerType),
@@ -205,18 +205,21 @@ payment_intents_schema = PropertiesList(
     Property(
         "shipping",
         ObjectType(
-            Property("address", ObjectType(
-                Property("city", StringType),
-                Property("country", StringType),
-                Property("line1", StringType),
-                Property("line2", StringType),
-                Property("postal_code", StringType),
-                Property("state", StringType),
-            )),
+            Property(
+                "address",
+                ObjectType(
+                    Property("city", StringType),
+                    Property("country", StringType),
+                    Property("line1", StringType),
+                    Property("line2", StringType),
+                    Property("postal_code", StringType),
+                    Property("state", StringType),
+                ),
+            ),
             Property("carrier", StringType),
             Property("name", StringType),
             Property("phone", StringType),
-            Property("tracking_number", StringType)
+            Property("tracking_number", StringType),
         ),
     ),
     Property("statement_descriptor", StringType),
@@ -225,9 +228,7 @@ payment_intents_schema = PropertiesList(
     Property("amount_capturable", IntegerType),
     Property(
         "amount_details",
-        ObjectType(
-            Property("tip", ObjectType(Property("amount", IntegerType)))
-        ),
+        ObjectType(Property("tip", ObjectType(Property("amount", IntegerType)))),
     ),
     Property("amount_received", IntegerType),
     Property("application", StringType),
@@ -252,18 +253,18 @@ payment_intents_schema = PropertiesList(
         "processing",
         ObjectType(
             Property(
-                "card", 
+                "card",
                 ObjectType(
                     Property(
-                        "customer_notification", 
+                        "customer_notification",
                         ObjectType(
-                            Property("approval_requested", BooleanType), 
+                            Property("approval_requested", BooleanType),
                             Property("completes_at", DateTimeType),
-                        )
-                    )
-                )
-            )
-        )
+                        ),
+                    ),
+                ),
+            ),
+        ),
     ),
     Property("review", StringType),
     Property(
@@ -273,7 +274,7 @@ payment_intents_schema = PropertiesList(
             Property("destination", StringType),
         ),
     ),
-    Property("transfer_group", StringType)
+    Property("transfer_group", StringType),
 ).to_dict()
 
 sources_schema = PropertiesList(
@@ -281,269 +282,382 @@ sources_schema = PropertiesList(
     Property("object", StringType),
     Property("amount", IntegerType),
     Property("client_secret", StringType),
-    Property("code_verification", ObjectType(
-        Property("attempts_remaining", IntegerType),
-        Property("status", StringType)
-    )),
+    Property(
+        "code_verification",
+        ObjectType(
+            Property("attempts_remaining", IntegerType),
+            Property("status", StringType),
+        ),
+    ),
     Property("created", IntegerType),
     Property("currency", StringType),
     Property("customer", StringType),
     Property("flow", StringType),
     Property("livemode", BooleanType),
-    Property("mandate", ObjectType(
-        Property("acceptance", ObjectType(
-            Property("date", IntegerType),
-            Property("ip", StringType),
-            Property("offline", ObjectType(
-                Property("contact_email", StringType)
-            )),
-            Property("online", ObjectType(
-                Property("user_agent", StringType)
-            )),
+    Property(
+        "mandate",
+        ObjectType(
+            Property(
+                "acceptance",
+                ObjectType(
+                    Property("date", IntegerType),
+                    Property("ip", StringType),
+                    Property(
+                        "offline",
+                        ObjectType(Property("contact_email", StringType)),
+                    ),
+                    Property("online", ObjectType(Property("user_agent", StringType))),
+                    Property("status", StringType),
+                    Property("type", StringType),
+                    Property("user", StringType),
+                ),
+            ),
+            Property("amount", IntegerType),
+            Property("currency", StringType),
+            Property("interval", StringType),
+            Property("notification_method", StringType),
+        ),
+    ),
+    Property(
+        "owner",
+        ObjectType(
+            Property(
+                "address",
+                ObjectType(
+                    Property("city", StringType),
+                    Property("country", StringType),
+                    Property("line1", StringType),
+                    Property("line2", StringType),
+                    Property("postal_code", StringType),
+                    Property("state", StringType),
+                ),
+            ),
+            Property("email", StringType),
+            Property("name", StringType),
+            Property("phone", StringType),
+            Property(
+                "verified_address",
+                ObjectType(
+                    Property("city", StringType),
+                    Property("country", StringType),
+                    Property("line1", StringType),
+                    Property("line2", StringType),
+                    Property("postal_code", StringType),
+                    Property("state", StringType),
+                ),
+            ),
+            Property("verified_email", StringType),
+            Property("verified_name", StringType),
+            Property("verified_phone", StringType),
+        ),
+    ),
+    Property(
+        "receiver",
+        ObjectType(
+            Property("address", StringType),
+            Property("amount_charged", IntegerType),
+            Property("amount_received", IntegerType),
+            Property("amount_returned", IntegerType),
+        ),
+    ),
+    Property(
+        "redirect",
+        ObjectType(
+            Property("failure_reason", StringType),
+            Property("return_url", StringType),
             Property("status", StringType),
-            Property("type", StringType),
-            Property("user", StringType)
-        )),
-        Property("amount", IntegerType),
-        Property("currency", StringType),
-        Property("interval", StringType),
-        Property("notification_method", StringType)
-    )),
-    Property("owner", ObjectType(
-        Property("address", ObjectType(
-            Property("city", StringType),
-            Property("country", StringType),
-            Property("line1", StringType),
-            Property("line2", StringType),
-            Property("postal_code", StringType),
-            Property("state", StringType)
-        )),
-        Property("email", StringType),
-        Property("name", StringType),
-        Property("phone", StringType),
-        Property("verified_address", ObjectType(
-            Property("city", StringType),
-            Property("country", StringType),
-            Property("line1", StringType),
-            Property("line2", StringType),
-            Property("postal_code", StringType),
-            Property("state", StringType)
-        )),
-        Property("verified_email", StringType),
-        Property("verified_name", StringType),
-        Property("verified_phone", StringType)
-    )),
-    Property("receiver", ObjectType(
-        Property("address", StringType),
-        Property("amount_charged", IntegerType),
-        Property("amount_received", IntegerType),
-        Property("amount_returned", IntegerType)
-    )),
-    Property("redirect", ObjectType(
-        Property("failure_reason", StringType),
-        Property("return_url", StringType),
-        Property("status", StringType),
-        Property("url", StringType)
-    )),
+            Property("url", StringType),
+        ),
+    ),
     Property("statement_descriptor", StringType),
     Property("status", StringType),
     Property("type", StringType),
     Property("usage", StringType),
-    Property("ach_credit_transfer", ObjectType(
-        Property("account_number", StringType),
-        Property("bank_name", StringType),
-        Property("routing_number", StringType),
-        Property("swift_code", StringType)
-    )),
-    Property("ach_debit", ObjectType(
-        Property("bank_name", StringType),
-        Property("country", StringType),
-        Property("fingerprint", StringType),
-        Property("last4", StringType),
-        Property("routing_number", StringType),
-        Property("swift_code", StringType)
-    )),
-    Property("au_becs_debit", ObjectType(
-        Property("bsb_number", StringType),
-        Property("fingerprint", StringType),
-        Property("last4", StringType)
-    )),
-    Property("bancontact", ObjectType(
-        Property("bank_code", StringType),
-        Property("bank_name", StringType),
-        Property("bic", StringType),
-        Property("iban_last4", StringType),
-        Property("preferred_language", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("card", ObjectType(
-        Property("address_line1_check", StringType),
-        Property("address_zip_check", StringType),
-        Property("brand", StringType),
-        Property("country", StringType),
-        Property("cvc_check", StringType),
-        Property("dynamic_last4", StringType),
-        Property("exp_month", IntegerType),
-        Property("exp_year", IntegerType),
-        Property("fingerprint", StringType),
-        Property("funding", StringType),
-        Property("last4", StringType),
-        Property("name", StringType),
-        Property("three_d_secure", StringType),
-        Property("tokenization_method", StringType)
-    )),
-    Property("card_present", ObjectType(
-        Property("brand", StringType),
-        Property("cardholder_name", StringType),
-        Property("country", StringType),
-        Property("emv_auth_data", StringType),
-        Property("exp_month", IntegerType),
-        Property("exp_year", IntegerType),
-        Property("fingerprint", StringType),
-        Property("funding", StringType),
-        Property("last4", StringType),
-        Property("read_method", StringType),
-        Property("receipt", ObjectType(
-            Property("account_type", StringType),
-            Property("application_cryptogram", StringType),
-            Property("authorization_code", StringType),
-            Property("authorization_response_code", StringType),
-            Property("card_expiration_date", StringType),
-            Property("dedicated_file_name", StringType),
-            Property("terminal_verification_results", StringType),
-            Property("transaction_status_information", StringType)
-        ))
-    )),
-    Property("eps", ObjectType(
-        Property("reference", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("giropay", ObjectType(
-        Property("bank_code", StringType),
-        Property("bank_name", StringType),
-        Property("bic", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("ideal", ObjectType(
-        Property("bank", StringType),
-        Property("bic", StringType),
-        Property("iban_last4", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("klarna", ObjectType(
-        Property("background_color", StringType),
-        Property("client_token", StringType),
-        Property("first_name", StringType),
-        Property("last_name", StringType),
-        Property("locale", StringType),
-        Property("logo_url", StringType),
-        Property("page_title", StringType),
-        Property("pay_later_asset_urls_descriptive", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("pay_now_asset_urls_descriptive", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("pay_over_time_asset_urls_descriptive", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("pay_later_asset_urls_standard", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("pay_now_asset_urls_standard", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("pay_over_time_asset_urls_standard", ObjectType(
-            Property("long", StringType),
-            Property("medium", StringType),
-            Property("short", StringType)
-        )),
-        Property("payment_method_categories", ObjectType(
-            Property("descriptive", ObjectType(
-                Property("description", StringType),
-                Property("logo", StringType),
-                Property("subheader", StringType)
-            )),
-            Property("standard", ObjectType(
-                Property("description", StringType),
-                Property("logo", StringType),
-                Property("subheader", StringType)
-            ))
-        )),
-        Property("payment_method_category_order", ObjectType(
-            Property("descriptive", ObjectType(
-                Property("category", StringType),
-                Property("display_name", StringType),
-                Property("priority", IntegerType)
-            )),
-            Property("standard", ObjectType(
-                Property("category", StringType),
-                Property("display_name", StringType),
-                Property("priority", IntegerType)
-            ))
-        )),
-        Property("payment_method_order", ObjectType(
-            Property("category", StringType),
-            Property("display_name", StringType),
-            Property("priority", IntegerType)
-        )),
-        Property("phone", StringType),
-        Property("purchased_at", IntegerType),
-        Property("quantity", IntegerType),
-        Property("shipping_address", ObjectType(
-            Property("city", StringType),
+    Property(
+        "ach_credit_transfer",
+        ObjectType(
+            Property("account_number", StringType),
+            Property("bank_name", StringType),
+            Property("routing_number", StringType),
+            Property("swift_code", StringType),
+        ),
+    ),
+    Property(
+        "ach_debit",
+        ObjectType(
+            Property("bank_name", StringType),
             Property("country", StringType),
-            Property("line1", StringType),
-            Property("line2", StringType),
-            Property("postal_code", StringType),
-            Property("state", StringType)
-        )),
-        Property("title", StringType),
-        Property("total_amount", IntegerType),
-        Property("total_tax_amount", IntegerType)
-    )),
-    Property("multibanco", ObjectType(
-        Property("entity", StringType),
-        Property("reference", StringType)
-    )),
-    Property("p24", ObjectType(
-        Property("reference", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("sepa_debit", ObjectType(
-        Property("bank_code", StringType),
-        Property("branch_code", StringType),
-        Property("country", StringType),
-        Property("fingerprint", StringType),
-        Property("last4", StringType)
-    )),
-    Property("sofort", ObjectType(
-        Property("country", StringType),
-        Property("preferred_language", StringType),
-        Property("reference", StringType),
-        Property("verified_name", StringType)
-    )),
-    Property("three_d_secure", ObjectType(
-        Property("authenticated", BooleanType),
-        Property("authentication_flow", StringType),
-        Property("result", StringType),
-        Property("result_reason", StringType)
-    )),
-    Property("wechat", ObjectType(
-        Property("prepay_id", StringType),
-        Property("qr_code_url", StringType),
-        Property("qr_code_url_expires_at", IntegerType)
-    ))
+            Property("fingerprint", StringType),
+            Property("last4", StringType),
+            Property("routing_number", StringType),
+            Property("swift_code", StringType),
+        ),
+    ),
+    Property(
+        "au_becs_debit",
+        ObjectType(
+            Property("bsb_number", StringType),
+            Property("fingerprint", StringType),
+            Property("last4", StringType),
+        ),
+    ),
+    Property(
+        "bancontact",
+        ObjectType(
+            Property("bank_code", StringType),
+            Property("bank_name", StringType),
+            Property("bic", StringType),
+            Property("iban_last4", StringType),
+            Property("preferred_language", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "card",
+        ObjectType(
+            Property("address_line1_check", StringType),
+            Property("address_zip_check", StringType),
+            Property("brand", StringType),
+            Property("country", StringType),
+            Property("cvc_check", StringType),
+            Property("dynamic_last4", StringType),
+            Property("exp_month", IntegerType),
+            Property("exp_year", IntegerType),
+            Property("fingerprint", StringType),
+            Property("funding", StringType),
+            Property("last4", StringType),
+            Property("name", StringType),
+            Property("three_d_secure", StringType),
+            Property("tokenization_method", StringType),
+        ),
+    ),
+    Property(
+        "card_present",
+        ObjectType(
+            Property("brand", StringType),
+            Property("cardholder_name", StringType),
+            Property("country", StringType),
+            Property("emv_auth_data", StringType),
+            Property("exp_month", IntegerType),
+            Property("exp_year", IntegerType),
+            Property("fingerprint", StringType),
+            Property("funding", StringType),
+            Property("last4", StringType),
+            Property("read_method", StringType),
+            Property(
+                "receipt",
+                ObjectType(
+                    Property("account_type", StringType),
+                    Property("application_cryptogram", StringType),
+                    Property("authorization_code", StringType),
+                    Property("authorization_response_code", StringType),
+                    Property("card_expiration_date", StringType),
+                    Property("dedicated_file_name", StringType),
+                    Property("terminal_verification_results", StringType),
+                    Property("transaction_status_information", StringType),
+                ),
+            ),
+        ),
+    ),
+    Property(
+        "eps",
+        ObjectType(
+            Property("reference", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "giropay",
+        ObjectType(
+            Property("bank_code", StringType),
+            Property("bank_name", StringType),
+            Property("bic", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "ideal",
+        ObjectType(
+            Property("bank", StringType),
+            Property("bic", StringType),
+            Property("iban_last4", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "klarna",
+        ObjectType(
+            Property("background_color", StringType),
+            Property("client_token", StringType),
+            Property("first_name", StringType),
+            Property("last_name", StringType),
+            Property("locale", StringType),
+            Property("logo_url", StringType),
+            Property("page_title", StringType),
+            Property(
+                "pay_later_asset_urls_descriptive",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "pay_now_asset_urls_descriptive",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "pay_over_time_asset_urls_descriptive",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "pay_later_asset_urls_standard",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "pay_now_asset_urls_standard",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "pay_over_time_asset_urls_standard",
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
+            ),
+            Property(
+                "payment_method_categories",
+                ObjectType(
+                    Property(
+                        "descriptive",
+                        ObjectType(
+                            Property("description", StringType),
+                            Property("logo", StringType),
+                            Property("subheader", StringType),
+                        ),
+                    ),
+                    Property(
+                        "standard",
+                        ObjectType(
+                            Property("description", StringType),
+                            Property("logo", StringType),
+                            Property("subheader", StringType),
+                        ),
+                    ),
+                ),
+            ),
+            Property(
+                "payment_method_category_order",
+                ObjectType(
+                    Property(
+                        "descriptive",
+                        ObjectType(
+                            Property("category", StringType),
+                            Property("display_name", StringType),
+                            Property("priority", IntegerType),
+                        ),
+                    ),
+                    Property(
+                        "standard",
+                        ObjectType(
+                            Property("category", StringType),
+                            Property("display_name", StringType),
+                            Property("priority", IntegerType),
+                        ),
+                    ),
+                ),
+            ),
+            Property(
+                "payment_method_order",
+                ObjectType(
+                    Property("category", StringType),
+                    Property("display_name", StringType),
+                    Property("priority", IntegerType),
+                ),
+            ),
+            Property("phone", StringType),
+            Property("purchased_at", IntegerType),
+            Property("quantity", IntegerType),
+            Property(
+                "shipping_address",
+                ObjectType(
+                    Property("city", StringType),
+                    Property("country", StringType),
+                    Property("line1", StringType),
+                    Property("line2", StringType),
+                    Property("postal_code", StringType),
+                    Property("state", StringType),
+                ),
+            ),
+            Property("title", StringType),
+            Property("total_amount", IntegerType),
+            Property("total_tax_amount", IntegerType),
+        ),
+    ),
+    Property(
+        "multibanco",
+        ObjectType(Property("entity", StringType), Property("reference", StringType)),
+    ),
+    Property(
+        "p24",
+        ObjectType(
+            Property("reference", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "sepa_debit",
+        ObjectType(
+            Property("bank_code", StringType),
+            Property("branch_code", StringType),
+            Property("country", StringType),
+            Property("fingerprint", StringType),
+            Property("last4", StringType),
+        ),
+    ),
+    Property(
+        "sofort",
+        ObjectType(
+            Property("country", StringType),
+            Property("preferred_language", StringType),
+            Property("reference", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
+    Property(
+        "three_d_secure",
+        ObjectType(
+            Property("authenticated", BooleanType),
+            Property("authentication_flow", StringType),
+            Property("result", StringType),
+            Property("result_reason", StringType),
+        ),
+    ),
+    Property(
+        "wechat",
+        ObjectType(
+            Property("prepay_id", StringType),
+            Property("qr_code_url", StringType),
+            Property("qr_code_url_expires_at", IntegerType),
+        ),
+    ),
 ).to_dict()
 
 exchange_rates_schema = PropertiesList(
@@ -560,7 +674,13 @@ report_runs_schema = PropertiesList(
     Property("created", IntegerType),
     Property("error", StringType),
     Property("livemode", BooleanType),
-    Property("parameters", ObjectType(Property("interval_end", IntegerType), Property("interval_start", IntegerType))),
+    Property(
+        "parameters",
+        ObjectType(
+            Property("interval_end", IntegerType),
+            Property("interval_start", IntegerType),
+        ),
+    ),
     Property("report_type", StringType),
     Property(
         "result",
