@@ -17,7 +17,7 @@ packages = [
 python = ">=3.8,<4"
 singer-sdk = { version="~=0.42.1" }
 fs-s3fs = { version = "~=1.1.1", optional = true }
-requests = "~=2.31.0"
+requests = "~=2.32.3"
 cached-property = "~=2" # Remove after Python 3.7 support is dropped
 backoff-utils = "^1.0.1"
 
