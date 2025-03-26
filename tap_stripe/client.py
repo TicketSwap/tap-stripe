@@ -2,65 +2,24 @@
 
 from __future__ import annotations
 
-import sys
-from typing import Any, Callable, Iterable
-from datetime import datetime
 import ast
-import requests
-import typing
-import time
-import backoff
 import csv
-from io import StringIO
+import time
+import typing
+from datetime import datetime
 from hashlib import md5
+from io import StringIO
+from typing import Any, Iterable
 
-from singer_sdk._singerlib import Schema
-from singer_sdk.tap_base import Tap
+from requests.auth import HTTPBasicAuth
 from singer_sdk.streams import RESTStream
-from singer_sdk.authenticators import BasicAuthenticator
-from singer_sdk.pagination import BaseOffsetPaginator
 
 if typing.TYPE_CHECKING:
-    from requests import Response
+    from singer_sdk._singerlib import Schema
+    from singer_sdk.tap_base import Tap
 
 T = typing.TypeVar("T")
 TPageToken = typing.TypeVar("TPageToken")
-
-if sys.version_info >= (3, 8):
-    from functools import cached_property
-else:
-    from cached_property import cached_property
-
-_Auth = Callable[[requests.PreparedRequest], requests.PreparedRequest]
-
-
-class AttributeError(Exception):
-    """Raised when an attribute throws an error"""
-
-
-class StripePaginator(BaseOffsetPaginator):
-    def has_more(self, response: Response) -> bool:  # noqa: ARG002
-        """Override this method to check if the endpoint has any pages left.
-
-        Args:
-            response: API response object.
-
-        Returns:
-            Boolean flag used to indicate if the endpoint has more pages.
-        """
-        return response.json()["has_more"]
-
-    def get_next(self, response: Response) -> TPageToken | None:
-        """Get the next pagination token or index from the API response.
-
-        Args:
-            response: API response object.
-
-        Returns:
-            The next page token or index. Return `None` from this method to indicate
-                the end of pagination.
-        """
-        return response.json()["data"][-1]["id"]
 
 
 class StripeStream(RESTStream):
@@ -72,19 +31,21 @@ class StripeStream(RESTStream):
         return "https://api.stripe.com/v1"
 
     records_jsonpath = "$.data[*]"  # Or override `parse_response`.
+    next_page_token_jsonpath = "$.data[-1].id"  # noqa: S105
 
     @property
-    def authenticator(self):
+    def authenticator(self) -> HTTPBasicAuth:
         """Return the authenticator."""
-        return BasicAuthenticator.create_for_stream(self, username=self.config.get("api_key"), password="")
+        return HTTPBasicAuth(username=self.config.get("api_key"), password="")
 
-    def get_url_params(self, context, next_page_token):
+    def get_url_params(self, context:dict, next_page_token:str) -> dict:
+        """Get URL parameters."""
         params = {"limit": 100}
         start_date = self.get_starting_replication_key_value(context)
 
         if start_date:
-            if type(start_date) == str:
-                start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))
+            if type(start_date) is str:
+                start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))  # noqa: DTZ007
             params["created[gt]"] = start_date
 
         if next_page_token:
@@ -92,30 +53,15 @@ class StripeStream(RESTStream):
 
         return params
 
-    def get_new_paginator(self) -> BaseOffsetPaginator:
-        """Create a new pagination helper instance.
-
-        If the source API can make use of the `next_page_token_jsonpath`
-        attribute, or it contains a `X-Next-Page` header in the response
-        then you can remove this method.
-
-        If you need custom pagination that uses page numbers, "next" links, or
-        other approaches, please read the guide: https://sdk.meltano.com/en/v0.25.0/guides/pagination-classes.html.
-
-        Returns:
-            A pagination helper instance.
-        """
-        return StripePaginator(page_size=100, start_value=0)
-
 
 class StripeReportStream(StripeStream):
-    """Stripe report stream class"""
+    """Stripe report stream class."""
 
     path = ""
     replication_key = "report_end_at"
 
-    def __init__(
-        self, tap: Tap, name: str | None = None, schema: dict[str, Any] | Schema | None = None, path: str | None = None
+    def __init__(  # noqa: D107
+        self, tap: Tap, name: str | None = None, schema: dict[str, Any] | Schema | None = None, path: str | None = None,
     ) -> None:
         super().__init__(tap, name, schema, path)
         self.primary_keys = [f"{self.name}_id"]
@@ -125,7 +71,8 @@ class StripeReportStream(StripeStream):
         """Return the API URL root, configurable via tap settings."""
         return "https://api.stripe.com/v1/reporting"
 
-    def retrieve_report_data_availability(self) -> (int, int):
+    def retrieve_report_data_availability(self) -> tuple[int, int]:
+        """Get the data availability for the report."""
         prepared_request = self.build_prepared_request(
             method="GET",
             url=f"{self.url_base}/report_types/{self.original_name}",
@@ -134,11 +81,12 @@ class StripeReportStream(StripeStream):
         response = self._request(prepared_request=prepared_request, context=None).json()
         return response["data_available_start"], response["data_available_end"]
 
-    def check_pending_reports(self, report_start_at) -> str | None:
+    def check_pending_reports(self, report_start_at:int) -> str | None:
+        """Check if there are any pending reports."""
         prepared_request = self.build_prepared_request(
-            method="GET", url=f"{self.url_base}/report_runs", headers=self.http_headers, params={"limit": 100}
+            method="GET", url=f"{self.url_base}/report_runs", headers=self.http_headers, params={"limit": 100},
         )
-        self.logger.info(f"checking pending reports for report {self.original_name}")
+        self.logger.info("checking pending reports for report %s", self.original_name)
         response = self._request(prepared_request=prepared_request, context=None).json()
         reports = [
             report
@@ -151,47 +99,53 @@ class StripeReportStream(StripeStream):
         if latest_report:
             self.report_end_at = latest_report["parameters"]["interval_end"]
             return latest_report["result"]["url"]
+        return None
 
-    def issue_run(self, interval_start, interval_end) -> str:
+    def issue_run(self, interval_start:int, interval_end:int) -> str:
+        """Issue a report run."""
         params = {
             "report_type": self.original_name,
             "parameters[interval_start]": interval_start,
             "parameters[interval_end]": interval_end,
         }
         prepared_request = self.build_prepared_request(
-            method="POST", url=f"{self.url_base}/report_runs", params=params, headers=self.http_headers, json={}
+            method="POST", url=f"{self.url_base}/report_runs", params=params, headers=self.http_headers, json={},
         )
         self.logger.info(
-            f"issuing report {self.original_name} with interval_start={interval_start} and interval_end={interval_end}"
+            "issuing report %s with interval_start=%s and interval_end=%s",
+            self.original_name,
+            interval_start,
+            interval_end,
         )
         response = self._request(prepared_request=prepared_request, context=None).json()
         return response["id"]
 
-    def get_download_url(self, run_id) -> str | None:
+    def get_download_url(self, run_id:str) -> str | None:
+        """Retrieve the download URL for the report."""
         prepared_request = self.build_prepared_request(
             method="GET",
             url=f"{self.url_base}/report_runs/{run_id}",
             headers=self.http_headers,
         )
         retry = 1
-        self.logger.info(f"retrieving download url for report {self.original_name}")
-        while retry <= 6:
+        self.logger.info("retrieving download url for report %s", self.original_name)
+        while retry <= 6:  # noqa: PLR2004
             try:
-                url = self._request(prepared_request, None).json().get("result").get("url")
-                return url
-            except:
+                return self._request(prepared_request, None).json().get("result").get("url")
+            except:  # noqa: E722, PERF203
                 retry += 1
                 sleep = 2**retry
-                self.logger.info(f"backing off for {sleep} seconds.")
+                self.logger.info("backing off for %s seconds.", sleep)
                 time.sleep(sleep)
+        return None
 
     def get_records(self, context: dict | None) -> Iterable[dict[str, Any]]:
+        """Get records."""
         start_date = self.get_starting_replication_key_value(context)
         data_available_start, data_available_end = self.retrieve_report_data_availability()
 
-        if start_date:
-            if type(start_date) == str:
-                start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))
+        if start_date and type(start_date) is str:
+            start_date = int(datetime.timestamp(datetime.strptime(start_date, "%Y-%m-%dT%H:%M:%SZ")))  # noqa: DTZ007
 
         report_start_at = max(data_available_start, start_date)
         report_end_at = data_available_end
@@ -204,35 +158,36 @@ class StripeReportStream(StripeStream):
                 run_id = self.issue_run(report_start_at, report_end_at)
                 url = self.get_download_url(run_id)
             if url is not None:
-                records = self.download_report(context=context, url=url)
-                return records
+                return self.download_report(context=context, url=url)
         return []
 
     def download_report(self, context: dict | None, url: str) -> Iterable[dict[str, Any]]:
+        """Download the report."""
         prepared_request = self.build_prepared_request(
             method="GET",
             url=url,
             headers=self.http_headers,
         )
-        self.logger.info(f"downloading report {self.original_name}")
+        self.logger.info("downloading report %s", self.original_name)
         response = self._request(prepared_request=prepared_request, context=None)
         csv_file = StringIO(response.text)
         dict_reader = csv.DictReader(csv_file)
-        transformed_records = [self.post_process(record, context) for record in dict_reader]
-        return transformed_records
+        return [self.post_process(record, context) for record in dict_reader]
 
-    def safe_eval(self, value):
+    def safe_eval(self, value):  # noqa: ANN001, ANN201
+        """Safely evaluate a value."""
         try:
             return ast.literal_eval(value)
         except (ValueError, SyntaxError):
             return value
 
-    def post_process(self, row: dict, context: dict | None = None) -> dict | None:
+    def post_process(self, row: dict, context: dict | None = None) -> dict | None:  # noqa: ARG002
+        """Post process a row."""
         row = {key: self.safe_eval(value) for key, value in row.items()}
         row["report_start_at"] = self.report_start_at
         row["report_end_at"] = self.report_end_at
-        row["loaded_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")
-        row[self.primary_keys[0]] = md5(
-            "".join([str(row[key]) for key in row.keys() if key in self.id_keys and row[key] is not None]).encode()
+        row["loaded_at"] = datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ")  # noqa: DTZ005
+        row[self.primary_keys[0]] = md5(  # noqa: S324
+            "".join([str(row[key]) for key in row if key in self.id_keys and row[key] is not None]).encode(),
         ).hexdigest()
         return row

@@ -5,7 +5,6 @@ from __future__ import annotations
 from singer_sdk import Tap
 from singer_sdk import typing as th  # JSON schema typing helpers
 
-# TODO: Import your custom stream types here:
 from tap_stripe import streams
 
 
@@ -39,7 +38,6 @@ class TapStripe(Tap):
             streams.ChargesStream(self),
             streams.DisputesStream(self),
             streams.PaymentIntentsStream(self),
-            # streams.SourcesSchema(self),
             streams.ExchangeRateStream(self),
             streams.ReportRunsStream(self),
             streams.ActivitySummary1Stream(self),
