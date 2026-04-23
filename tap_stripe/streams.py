@@ -40,7 +40,6 @@ class DisputesStream(StripeStream):
     path = "/disputes"
     primary_keys: t.ClassVar[list[str]] = ["id"]
     is_sorted = False
-    replication_key = "created"
 
     schema = disputes_schema
 
