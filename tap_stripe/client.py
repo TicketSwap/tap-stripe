@@ -15,7 +15,7 @@ from requests.auth import HTTPBasicAuth
 from singer_sdk.streams import RESTStream
 
 if typing.TYPE_CHECKING:
-    from singer_sdk._singerlib import Schema
+    from singer_sdk.singerlib import Schema
     from singer_sdk.tap_base import Tap
 
 T = typing.TypeVar("T")
@@ -158,10 +158,10 @@ class StripeReportStream(StripeStream):
                 run_id = self.issue_run(report_start_at, report_end_at)
                 url = self.get_download_url(run_id)
             if url is not None:
-                return self.download_report(context=context, url=url)
+                return self.download_report(url=url)
         return []
 
-    def download_report(self, context: dict | None, url: str) -> Iterable[dict[str, Any]]:
+    def download_report(self, url: str) -> Iterable[dict[str, Any]]:
         """Download the report."""
         prepared_request = self.build_prepared_request(
             method="GET",
@@ -171,8 +171,7 @@ class StripeReportStream(StripeStream):
         self.logger.info("downloading report %s", self.original_name)
         response = self._request(prepared_request=prepared_request, context=None)
         csv_file = StringIO(response.text)
-        dict_reader = csv.DictReader(csv_file)
-        return [self.post_process(record, context) for record in dict_reader]
+        return list(csv.DictReader(csv_file))
 
     def safe_eval(self, value):  # noqa: ANN001, ANN201
         """Safely evaluate a value."""

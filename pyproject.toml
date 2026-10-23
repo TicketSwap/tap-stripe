@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tap-stripe"
-version = "1.2.1"
+version = "1.2.2"
 description = "`tap-stripe` is a Singer tap for Stripe, built with the Meltano Singer SDK."
 readme = "README.md"
 authors = ["Tobias Cadee <tobias.cadee@ticketswap.com>"]
@@ -14,17 +14,16 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
-singer-sdk = { version="~=0.42.1" }
+python = ">=3.11,<4"
+singer-sdk = { version="~=0.54.9" }
 fs-s3fs = { version = "~=1.1.1", optional = true }
-requests = "~=2.32.3"
-cached-property = "~=2" # Remove after Python 3.7 support is dropped
+requests = "~=2.34.2"
 backoff-utils = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=7.4.0"
-singer-sdk = { version="~=0.42.1", extras = ["testing"] }
-ipykernel = "^6.29.5"
+pytest = ">=9.1.1"
+singer-sdk = { version="~=0.54.9", extras = ["testing"] }
+ipykernel = "^7.4.0"
 
 [tool.poetry.extras]
 s3 = ["fs-s3fs"]
