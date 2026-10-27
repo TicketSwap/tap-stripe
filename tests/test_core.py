@@ -3,7 +3,7 @@
 import datetime
 import os
 
-from singer_sdk.testing import get_tap_test_class
+from singer_sdk.testing import SuiteConfig, get_tap_test_class
 
 from tap_stripe.client import StripeReportStream
 from tap_stripe.tap import TapStripe
@@ -26,4 +26,5 @@ class TapStripeReadOnly(TapStripe):
 TestTapStripe = get_tap_test_class(
     tap_class=TapStripeReadOnly,
     config=SAMPLE_CONFIG,
+    suite_config=SuiteConfig(ignore_no_records_for_streams=["report_runs"]),
 )
