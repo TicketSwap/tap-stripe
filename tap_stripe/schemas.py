@@ -114,7 +114,9 @@ disputes_schema = PropertiesList(
     Property(
         "balance_transactions",
         ArrayType(
-            Property("id", StringType),
+            ObjectType(
+                Property("id", StringType),
+            ),
         ),
     ),
     Property("charge", StringType),
