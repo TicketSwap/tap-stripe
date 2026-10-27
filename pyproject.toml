@@ -36,6 +36,7 @@ warn_unused_configs = true
 ignore = [
     "ANN101",  # missing-type-self
     "ANN102",  # missing-type-cls
+    "CPY001",
 ]
 select = ["ALL"]
 src = ["tap_stripe"]

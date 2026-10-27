@@ -175,7 +175,10 @@ payment_intents_schema = PropertiesList(
     Property("amount", IntegerType),
     Property(
         "automatic_payment_methods",
-        ObjectType(Property("allow_redirects", StringType), Property("enabled", BooleanType)),
+        ObjectType(
+            Property("allow_redirects", StringType),
+            Property("enabled", BooleanType),
+        ),
     ),
     Property("created", IntegerType),
     Property("client_secret", StringType),
@@ -282,7 +285,11 @@ sources_schema = PropertiesList(
     Property("amount", IntegerType),
     Property("client_secret", StringType),
     Property(
-        "code_verification", ObjectType(Property("attempts_remaining", IntegerType), Property("status", StringType)),
+        "code_verification",
+        ObjectType(
+            Property("attempts_remaining", IntegerType),
+            Property("status", StringType),
+        ),
     ),
     Property("created", IntegerType),
     Property("currency", StringType),
@@ -297,7 +304,10 @@ sources_schema = PropertiesList(
                 ObjectType(
                     Property("date", IntegerType),
                     Property("ip", StringType),
-                    Property("offline", ObjectType(Property("contact_email", StringType))),
+                    Property(
+                        "offline",
+                        ObjectType(Property("contact_email", StringType)),
+                    ),
                     Property("online", ObjectType(Property("user_agent", StringType))),
                     Property("status", StringType),
                     Property("type", StringType),
@@ -388,7 +398,9 @@ sources_schema = PropertiesList(
     Property(
         "au_becs_debit",
         ObjectType(
-            Property("bsb_number", StringType), Property("fingerprint", StringType), Property("last4", StringType),
+            Property("bsb_number", StringType),
+            Property("fingerprint", StringType),
+            Property("last4", StringType),
         ),
     ),
     Property(
@@ -449,7 +461,13 @@ sources_schema = PropertiesList(
             ),
         ),
     ),
-    Property("eps", ObjectType(Property("reference", StringType), Property("verified_name", StringType))),
+    Property(
+        "eps",
+        ObjectType(
+            Property("reference", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
     Property(
         "giropay",
         ObjectType(
@@ -480,27 +498,51 @@ sources_schema = PropertiesList(
             Property("page_title", StringType),
             Property(
                 "pay_later_asset_urls_descriptive",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "pay_now_asset_urls_descriptive",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "pay_over_time_asset_urls_descriptive",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "pay_later_asset_urls_standard",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "pay_now_asset_urls_standard",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "pay_over_time_asset_urls_standard",
-                ObjectType(Property("long", StringType), Property("medium", StringType), Property("short", StringType)),
+                ObjectType(
+                    Property("long", StringType),
+                    Property("medium", StringType),
+                    Property("short", StringType),
+                ),
             ),
             Property(
                 "payment_method_categories",
@@ -571,8 +613,17 @@ sources_schema = PropertiesList(
             Property("total_tax_amount", IntegerType),
         ),
     ),
-    Property("multibanco", ObjectType(Property("entity", StringType), Property("reference", StringType))),
-    Property("p24", ObjectType(Property("reference", StringType), Property("verified_name", StringType))),
+    Property(
+        "multibanco",
+        ObjectType(Property("entity", StringType), Property("reference", StringType)),
+    ),
+    Property(
+        "p24",
+        ObjectType(
+            Property("reference", StringType),
+            Property("verified_name", StringType),
+        ),
+    ),
     Property(
         "sepa_debit",
         ObjectType(
@@ -625,7 +676,13 @@ report_runs_schema = PropertiesList(
     Property("created", IntegerType),
     Property("error", StringType),
     Property("livemode", BooleanType),
-    Property("parameters", ObjectType(Property("interval_end", IntegerType), Property("interval_start", IntegerType))),
+    Property(
+        "parameters",
+        ObjectType(
+            Property("interval_end", IntegerType),
+            Property("interval_start", IntegerType),
+        ),
+    ),
     Property("report_type", StringType),
     Property(
         "result",
