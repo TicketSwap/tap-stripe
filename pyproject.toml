@@ -21,7 +21,7 @@ requests = "~=2.34.2"
 backoff-utils = "^1.0.1"
 
 [tool.poetry.group.dev.dependencies]
-pytest = ">=9.1.1"
+pytest = ">=9.2.0"
 singer-sdk = { version="~=0.54.9", extras = ["testing"] }
 ipykernel = "^7.4.0"
 
